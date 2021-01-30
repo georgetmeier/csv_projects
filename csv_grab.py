@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     '''
@@ -22,10 +21,8 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
         raise Exception('ERROR dictionary element out of range')
 
     # check if primary match secondary
-    pfn = np.array(pf)
-    sfn = np.array(sf)
-    sKeys = [sfn[i][myDict['secondaryKeyPos']] for i in range(len(sfn))]
-    pKeys = [pfn[i][myDict['primaryKeyPos']] for i in range(len(pfn))]
+    pKeys = [i for i in pf[pf.columns[myDict['primaryKeyPos']]]]
+    sKeys = [i for i in sf[sf.columns[myDict['secondaryKeyPos']]]]
     for pKey, sKey in zip(pKeys, sKeys):
         if pKey == sKey:
             # grab and append
@@ -46,5 +43,5 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
 
 if __name__=='__main__':
     d = {'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (2,)}
-    csv_grab('test0.csv', 'test1.csv', 'out.csv', d)
+    foo=csv_grab('test0.csv', 'test1.csv', 'out.csv', d)
 
