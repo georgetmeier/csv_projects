@@ -1,7 +1,6 @@
 import pandas as pd
-import json
+import doctest
 import sys
-
 
 def errorCheck(pf, sf, myDict):
     '''
@@ -9,37 +8,30 @@ def errorCheck(pf, sf, myDict):
     Traceback (most recent call last):
     ...
     Exception: ERROR with dictionary key names
-
     >>> myDict={'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': 1}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
     Exception: ERROR grabPos must be tuple
-
     >>> myDict={'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (3,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
     Exception: ERROR dictionary element out of range
-
     >>> myDict={'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (-1,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
     Exception: ERROR dictionary element out of range
-
     >>> myDict={'primaryKeyPos': -1, 'secondaryKeyPos': 1, 'grabPos': (2,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
     Exception: ERROR dictionary element out of range
-
     >>> myDict={'primaryKeyPos': 3, 'secondaryKeyPos': 1, 'grabPos': (2,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
     Exception: ERROR dictionary element out of range
-
     >>> myDict={'primaryKeyPos': 0, 'secondaryKeyPos': -1, 'grabPos': (2,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
     Exception: ERROR dictionary element out of range
-
     >>> myDict={'primaryKeyPos': 0, 'secondaryKeyPos': 3, 'grabPos': (2,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
@@ -69,6 +61,9 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
 
     example
     ~$ python csv_grab.py foo.csv bar.csv out.csv '{"primaryKeyPos": 0, "secondaryKeyPos": 1, "grabPos": (2,)}'
+
+    run tests
+    ~$ python -m doctest -v csv_grab.pu
     '''
     # read in csv
     pf = pd.read_csv(primaryFile)
@@ -98,7 +93,9 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
 
 
 if __name__=='__main__':
-    if len(sys.argv) <= 2:
+    if len(sys.argv) == 1:
+        # debug
+        # ~$ python csv_grab.py
         test = {'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (2,)}
         csv_grab('test0.csv', 'test1.csv', 'out.csv', test)
     else:
