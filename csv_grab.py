@@ -42,12 +42,8 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
         for i in range(len(pf.index)):
             f.write(','.join([str(j) for j in pf.loc[i]])+'\n')
 
-
+# only for debug. import and call function
 if __name__=='__main__':
     d = {'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (2,)}
     csv_grab('test0.csv', 'test1.csv', 'out.csv', d)
 
-    try:
-        csv_grab('test0.csv', 'test1.csv', 'out.csv', {'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (2,)})
-    except:
-        print('errors')
