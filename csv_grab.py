@@ -1,17 +1,26 @@
 import pandas as pd
+import json
+import sys
 
 def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     '''
     myDict = {'primaryKeyPos': #, 'secondaryKeyPos': #, 'grabPos': (#,)}
-    grabPos is a tuple (a tuple of 1 looks like (#,))
+    grabPos is a tuple
+
+    example
+    ~$ python csv_grab.py foo.csv bar.csv out.csv '{"primaryKeyPos": 0, "secondaryKeyPos": 1, "grabPos": (2,)}'
     '''
     # read in csv
     pf = pd.read_csv(primaryFile)
     sf = pd.read_csv(secondaryFile)
 
+    # error check myDict
+    if [key for key in myDict.keys()] != ['primaryKeyPos', 'secondaryKeyPos', 'grabPos']:
+        raise Exception('ERROR with dictionary key names')
+
     # error check tuple
     if type(myDict['grabPos']) is not tuple:
-        raise Exception('grabPos must be tuple')
+        raise Exception('ERROR grabPos must be tuple')
 
     # error check 0<=keys<=cols
     if myDict['primaryKeyPos'] > len(pf.columns)-1 \
@@ -42,8 +51,11 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
         for i in range(len(pf.index)):
             f.write(','.join([str(j) for j in pf.loc[i]])+'\n')
 
-# only for debug. import and call function
-if __name__=='__main__':
-    d = {'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (2,)}
-    csv_grab('test0.csv', 'test1.csv', 'out.csv', d)
 
+if __name__=='__main__':
+    if len(sys.argv) <= 1:
+        test = {'primaryKeyPos': 0, 'secondaryKeyPos': 1, 'grabPos': (2,)}
+        csv_grab('test0.csv', 'test1.csv', 'out.csv', test)
+    else:
+        argDict = eval(sys.argv[4])
+        csv_grab(sys.argv[1], sys.argv[2], sys.argv[3], argDict)
