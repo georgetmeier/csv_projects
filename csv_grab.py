@@ -80,8 +80,8 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     errorCheck(pf,sf,myDict)
 
     # check if primary match secondary
-    pKeys = [i for i in pf[pf.columns[myDict['primaryKeyPos']]]]
-    sKeys = [i for i in sf[sf.columns[myDict['secondaryKeyPos']]]]
+    pKeys = [*pf[pf.columns[myDict['primaryKeyPos']]]]
+    sKeys = [*sf[sf.columns[myDict['secondaryKeyPos']]]]
     for pKey, sKey in zip(pKeys, sKeys):
         if pKey == sKey:
             # grab and append
@@ -89,6 +89,7 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
             colList = list(map(getCol, myDict['grabPos']))
             for col in colList:
                 pf[col.name] = col
+            # stop on first match
             break
 
     # write csv
