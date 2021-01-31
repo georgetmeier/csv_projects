@@ -7,7 +7,7 @@ def remove_blank_lines(input: str):
     with open(input) as f:
         cleanedRows = [row for row in f if row != '\n']
     with open(input, 'w') as f:
-        f.write(''.join([*cleanedRows]))
+        f.write(''.join(cleanedRows))
 
 if __name__ == '__main__':
     try:
