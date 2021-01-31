@@ -56,6 +56,11 @@ def errorCheck(pf, sf, myDict):
 
 def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     '''
+    csv_grab reads in 2 csvs then checks row by row if the primary key (as defined in myDict['primaryKeyPos'])
+    in the first csv matches the secondary key (as defined in myDict['secondaryKeyPos']) in the secondary csv.
+    If there is a match then the columns (as defined in myDict['grabPos']) are concatenated to the first csv
+    which is written to the outputFile
+
     myDict = {'primaryKeyPos': #, 'secondaryKeyPos': #, 'grabPos': (#,)}
     grabPos is a tuple
 
