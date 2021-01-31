@@ -4,6 +4,9 @@ import sys
 
 def errorCheck(pf, sf, myDict):
     '''
+    errorCheck validates the values provided by myDict are valid.
+    In other words 0 <= myDick.values() <= column count
+
     >>> myDict={'secondaryKeyPos': 1, 'primaryKeyPos': 0, 'grabPos': (2,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
     ...
