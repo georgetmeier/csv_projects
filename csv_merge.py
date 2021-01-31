@@ -3,7 +3,7 @@ import pandas as pd
 
 def csv_to_pandas(csv1: str, csv2: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     '''
-    input is a string 'example.csv'
+    input: 'example.csv'
     csv must have header
     both csvs must have the same header
     '''
@@ -16,7 +16,7 @@ def csv_to_pandas(csv1: str, csv2: str) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def pandas_to_dict(p1: pd.DataFrame, p2: pd.DataFrame) -> dict[str, int]:
     '''
-    combine keys from pandas and make a  dict, add values on collision
+    combine keys from pandas and make a dict, add values on collision
 
     add test
     >>> pandas_to_dict(pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]}),
@@ -69,7 +69,7 @@ def write_csv(headers: list[str], pDict: dict[str, int], outcsv: str) -> None:
 
 def csv_merge(csv1: str, csv2: str, outcsv: str) -> None:
     '''
-    call this one
+    main function
     '''
     p1, p2 = csv_to_pandas(csv1, csv2)
     d = pandas_to_dict(p1, p2)
