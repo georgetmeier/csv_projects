@@ -79,13 +79,13 @@ def csv_grab(primary_file: str, secondary_file: str, output_file: str, my_dict: 
     primary_frame = pd.read_csv(primary_file)
     secondary_frame = pd.read_csv(secondary_file)
 
-    error_check(primaryFrame, secondaryFrame, my_dict)
+    error_check(primary_frame, secondary_frame, my_dict)
 
     # check if primary match secondary
     primary_key_pos, secondary_key_pos, grab_pos = my_dict.values()
     for primary_key, secondary_key in zip(primary_frame[primary_frame.columns[primary_key_pos]],
-                                    secondary_Frame[secondary_frame.columns[secondary_key_pos]]):
-        if primaryKey == secondaryKey:
+                                    secondary_frame[secondary_frame.columns[secondary_key_pos]]):
+        if primary_key == secondary_key:
             # make list of columns to add
             columns_to_add = list(map(lambda index: secondary_frame[secondary_frame.columns[index]], grab_pos))
             for column in columns_to_add:
@@ -106,6 +106,7 @@ if __name__=='__main__':
     if len(sys.argv) == 1:
         # debug
         # ~$ python csv_grab.py
+        doctest.testmod()
         test = {'primary_key_pos': 0, 'secondary_key_pos': 1, 'grab_pos': (2,)}
         csv_grab('test0.csv', 'test1.csv', 'out.csv', test)
     else:
