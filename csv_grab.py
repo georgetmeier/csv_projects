@@ -43,7 +43,7 @@ def errorCheck(primaryFrame, secondaryFrame, myDict):
     primaryKeyPos, secondaryKeyPos, grabPos = myDict.values()
 
     # error check myDict
-    if [key for key in myDict.keys()] != ['primaryKeyPos', 'secondaryKeyPos', 'grabPos']:
+    if [*myDict.keys()] != ['primaryKeyPos', 'secondaryKeyPos', 'grabPos']:
         raise Exception('ERROR with dictionary key names')
 
     # error check tuple
@@ -79,27 +79,27 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     primaryFrame = pd.read_csv(primaryFile)
     secondaryFrame = pd.read_csv(secondaryFile)
 
-    errorCheck(primaryFrame,secondaryFrame,myDict)
+    errorCheck(primaryFrame, secondaryFrame, myDict)
 
     # check if primary match secondary
     primaryKeyPos, secondaryKeyPos, grabPos = myDict.values()
-    for primaryKey, secondaryKey in zip(primaryFrame[primaryFrame.columns[primaryKeyPos]], secondaryFrame[secondaryFrame.columns[secondaryKeyPos]]):
+    for primaryKey, secondaryKey in zip(primaryFrame[primaryFrame.columns[primaryKeyPos]],
+                                    secondaryFrame[secondaryFrame.columns[secondaryKeyPos]]):
         if primaryKey == secondaryKey:
-            # get list of columns to add
-            cols_to_add = list(map(lambda i: secondaryFrame[secondaryFrame.columns[i]], grabPos))
-            for col in cols_to_add:
-                # append columns
-                primaryFrame[col.name] = col
+            # make list of columns to add
+            columns_to_add = list(map(lambda index: secondaryFrame[secondaryFrame.columns[index]], grabPos))
+            for column in columns_to_add:
+                primaryFrame[column.name] = column
             # stop on first match
             break
 
     # write csv
     with open(outputFile, 'w') as f:
         # header
-        f.write(','.join(primaryFrame.columns)+'\n')
+        f.write(','.join(primaryFrame.columns) + '\n')
         # rows
-        for i in range(len(primaryFrame.index)):
-            f.write(','.join([str(j) for j in primaryFrame.loc[i]])+'\n')
+        for index in range(len(primaryFrame.index)):
+            f.write(','.join([str(item) for item in primaryFrame.loc[index]]) + '\n')
 
 
 if __name__=='__main__':

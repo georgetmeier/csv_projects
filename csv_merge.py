@@ -7,16 +7,18 @@ def csv_to_pandas(csv1: str, csv2: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     csv must have header
     both csvs must have the same header
     '''
-    p1 = pd.read_csv(csv1)
-    p2 = pd.read_csv(csv2)
+    primaryFrame = pd.read_csv(csv1)
+    secondaryFrame = pd.read_csv(csv2)
     # exit if keys do not match
-    if [i for i in p1.columns] != [i for i in p2.columns]:
+    if [*primaryFrame.columns] != [*secondaryFrame.columns]:
         raise Exception('ERROR: non-matching headers')
-    return p1, p2
+    return primaryFrame, secondaryFrame
 
-def pandas_to_dict(p1: pd.DataFrame, p2: pd.DataFrame) -> dict[str, int]:
+def pandas_to_dict(primaryFrame: pd.DataFrame, secondaryFrame: pd.DataFrame) -> dict[str, int]:
     '''
     combine keys from pandas and make a dict, add values on collision
+    the last column is the value the preceding columns as keys
+    k1,k2,k3,v -> {'k1k2k3': v}
 
     add test
     >>> pandas_to_dict(pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]}),
@@ -44,36 +46,36 @@ def pandas_to_dict(p1: pd.DataFrame, p2: pd.DataFrame) -> dict[str, int]:
     {'a, a': 1, 'b, b': 2, 'c, c': 3}
     '''
 
-    p1Dict = {}
-    for i in range(len(p1)):
-        p1Dict[', '.join(str(p1.iloc[i][j]) for j in range(len(p1.iloc[0])-1))] = p1.iloc[i][-1]
-    p2Dict = {}
-    for i in range(len(p2)):
-        p2Dict[', '.join(str(p2.iloc[i][j]) for j in range(len(p2.iloc[0])-1))] = p2.iloc[i][-1]
+    # make a dictionary of composite keys and values
+    # 'x' 'y' 'z' -> {'aa': 1, 'ab': 1}
+    # 'a' 'a'  0
+    # 'a' 'b'  1
+    primaryFrameDict = {', '.join(str(primaryFrame.iloc[i][j]) for j in range(len(primaryFrame.iloc[0])-1)) : primaryFrame.iloc[i][-1] for i in range(len(primaryFrame))}
+    secondaryFrameDict = {', '.join(str(secondaryFrame.iloc[i][j]) for j in range(len(secondaryFrame.iloc[0])-1)) : secondaryFrame.iloc[i][-1] for i in range(len(secondaryFrame))}
 
     # merge dict adding values where keys match
-    for k,v in p2Dict.items():
-        if k in p1Dict.keys():
-            p1Dict[k] += int(v)
+    for k,v in secondaryFrameDict.items():
+        if k in primaryFrameDict.keys():
+            primaryFrameDict[k] += int(v)
         else:
-            p1Dict[k] = int(v)
+            primaryFrameDict[k] = int(v)
 
-    return p1Dict
+    return primaryFrameDict
 
-def write_csv(headers: list[str], pDict: dict[str, int], outcsv: str) -> None:
+def write_csv(headers: list[str], primaryFrameDict: dict[str, int], outcsv: str) -> None:
     with open(outcsv, 'w') as f:
         f.write(','.join(headers)+'\n')
-        for key in pDict.keys():
-            f.write(f"{','.join(key.split(','))}, {pDict[key]}\n")
+        for key in primaryFrameDict.keys():
+            f.write(f"{','.join(key.split(','))}, {primaryFrameDict[key]}\n")
 
 
 def csv_merge(csv1: str, csv2: str, outcsv: str) -> None:
     '''
     main function
     '''
-    p1, p2 = csv_to_pandas(csv1, csv2)
-    d = pandas_to_dict(p1, p2)
-    write_csv(p1.columns, d, outcsv)
+    primaryFrame, secondaryFrame = csv_to_pandas(csv1, csv2)
+    d = pandas_to_dict(primaryFrame, secondaryFrame)
+    write_csv(primaryFrame.columns, d, outcsv)
 
 if __name__ == '__main__':
     '''
@@ -87,6 +89,7 @@ if __name__ == '__main__':
     if len(sys.argv) <= 2:
         import doctest
         doctest.testmod()
+        csv_merge('test0.csv', 'test1.csv', 'out.csv')
     elif len(sys.argv) < 4:
         print('missing arguments')
     else:
