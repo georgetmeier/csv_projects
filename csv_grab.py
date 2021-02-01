@@ -2,7 +2,7 @@ import pandas as pd
 import doctest
 import sys
 
-def errorCheck(primaryFrame: str, secondaryFrame: str, myDict: dict[str:int, str:int, str:tuple[int]]):
+def errorCheck(primaryFrame: pd.DataFrame, secondaryFrame: pd.DataFrame, myDict: dict[str:int, str:int, str:tuple[int]]):
     '''
     errorCheck validates the values provided by myDict are valid.
     In other words 0 <= myDict.values() <= column count
