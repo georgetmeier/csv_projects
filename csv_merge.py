@@ -8,15 +8,15 @@ def csv_to_pandas(csv1: str, csv2: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     csv must have header
     both csvs must have the same header
     '''
-    primaryFrame = pd.read_csv(csv1)
-    secondaryFrame = pd.read_csv(csv2)
+    primary_frame = pd.read_csv(csv1)
+    secondary_frame = pd.read_csv(csv2)
     # exit if keys do not match
-    if [*primaryFrame.columns] != [*secondaryFrame.columns]:
+    if [*primary_frame.columns] != [*secondary_frame.columns]:
         raise Exception('ERROR: non-matching headers')
-    return primaryFrame, secondaryFrame
+    return primary_frame, secondary_frame
 
 
-def pandas_to_dict(primaryFrame: pd.DataFrame, secondaryFrame: pd.DataFrame) -> dict[str, int]:
+def pandas_to_dict(primary_frame: pd.DataFrame, secondary_frame: pd.DataFrame) -> dict[str, int]:
     '''
     combine keys from pandas and make a dict, add values on collision
     the last column is the value the preceding columns as keys
@@ -52,37 +52,37 @@ def pandas_to_dict(primaryFrame: pd.DataFrame, secondaryFrame: pd.DataFrame) -> 
     # 'x' 'y' 'z' -> {'aa': 1, 'ab': 1}
     # 'a' 'a'  0
     # 'a' 'b'  1
-    primaryFrameDict = {', '.join(str(primaryFrame.iloc[i][j]) for j in range(primaryFrame.shape[1] - 1))
-                        : primaryFrame.iloc[i][-1]
-                        for i in range(primaryFrame.shape[0]) }
-    secondaryFrameDict = {', '.join(str(secondaryFrame.iloc[i][j]) for j in range(secondaryFrame.shape[1] - 1))
-                          : secondaryFrame.iloc[i][-1]
-                          for i in range(secondaryFrame.shape[0])}
+    primary_dict = {', '.join(str(primary_frame.iloc[i][j]) for j in range(primary_frame.shape[1] - 1))
+                        : primary_frame.iloc[i][-1]
+                    for i in range(primary_frame.shape[0])}
+    secondary_dict = {', '.join(str(secondary_frame.iloc[i][j]) for j in range(secondary_frame.shape[1] - 1))
+                          : secondary_frame.iloc[i][-1]
+                      for i in range(secondary_frame.shape[0])}
 
     # merge dict adding values where keys match
-    for k, v in secondaryFrameDict.items():
-        if k in primaryFrameDict.keys():
-            primaryFrameDict[k] += int(v)
+    for k, v in secondary_dict.items():
+        if k in primary_dict.keys():
+            primary_dict[k] += int(v)
         else:
-            primaryFrameDict[k] = int(v)
+            primary_dict[k] = int(v)
 
-    return primaryFrameDict
+    return primary_dict
 
 
-def write_csv(headers: list[str], primaryFrameDict: dict[str, int], outcsv: str) -> None:
+def write_csv(headers: list[str], primary_dict: dict[str, int], outcsv: str) -> None:
     with open(outcsv, 'w') as f:
         f.write(','.join(headers) + '\n')
-        for key in primaryFrameDict.keys():
-            f.write(f"{','.join(key.split(','))}, {primaryFrameDict[key]}\n")
+        for key in primary_dict.keys():
+            f.write(f"{','.join(key.split(','))}, {primary_dict[key]}\n")
 
 
 def csv_merge(csv1: str, csv2: str, outcsv: str) -> None:
     '''
     main function
     '''
-    primaryFrame, secondaryFrame = csv_to_pandas(csv1, csv2)
-    d = pandas_to_dict(primaryFrame, secondaryFrame)
-    write_csv(primaryFrame.columns, d, outcsv)
+    primary_frame, secondary_frame = csv_to_pandas(csv1, csv2)
+    d = pandas_to_dict(primary_frame, secondary_frame)
+    write_csv(primary_frame.columns, d, outcsv)
 
 
 if __name__ == '__main__':
@@ -96,7 +96,6 @@ if __name__ == '__main__':
     '''
     if len(sys.argv) <= 2:
         import doctest
-
         doctest.testmod()
         csv_merge('test0.csv', 'test1.csv', 'out.csv')
     elif len(sys.argv) < 4:
