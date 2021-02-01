@@ -2,7 +2,7 @@ import pandas as pd
 import doctest
 import sys
 
-def errorCheck(pf, sf, myDict):
+def errorCheck(primaryFrame, secondaryFrame, myDict):
     '''
     errorCheck validates the values provided by myDict are valid.
     In other words 0 <= myDick.values() <= column count
@@ -40,28 +40,30 @@ def errorCheck(pf, sf, myDict):
     ...
     Exception: ERROR dictionary element out of range
     '''
+    primaryKeyPos, secondaryKeyPos, grabPos = myDict.values()
+
     # error check myDict
     if [key for key in myDict.keys()] != ['primaryKeyPos', 'secondaryKeyPos', 'grabPos']:
         raise Exception('ERROR with dictionary key names')
 
     # error check tuple
-    if type(myDict['grabPos']) is not tuple:
+    if type(grabPos) is not tuple:
         raise Exception('ERROR grabPos must be tuple')
 
     # error check 0<=keys<=cols
-    if myDict['primaryKeyPos'] > len(pf.columns) - 1 \
-            or myDict['secondaryKeyPos'] > len(sf.columns) - 1 \
-            or True in [myDict['grabPos'][i] > len(sf.columns) - 1 for i in range(len(myDict['grabPos']))] \
-            or myDict['primaryKeyPos'] < 0 \
-            or myDict['secondaryKeyPos'] < 0 \
-            or True in [myDict['grabPos'][i] < 0 for i in range(len(myDict['grabPos']))]:
+    if primaryKeyPos > len(primaryFrame.columns) - 1 \
+            or secondaryKeyPos > len(secondaryFrame.columns) - 1 \
+            or True in [grabPos[i] > len(secondaryFrame.columns) - 1 for i in range(len(grabPos))] \
+            or primaryKeyPos < 0 \
+            or secondaryKeyPos < 0 \
+            or True in [grabPos[i] < 0 for i in range(len(grabPos))]:
         raise Exception('ERROR dictionary element out of range')
 
 def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     '''
-    csv_grab reads in 2 csvs then checks row by row if the primary key (as defined in myDict['primaryKeyPos'])
-    in the first csv matches the secondary key (as defined in myDict['secondaryKeyPos']) in the secondary csv.
-    If there is a match then the columns (as defined in myDict['grabPos']) are concatenated to the first csv
+    csv_grab reads in 2 csvs then checks row by row if the primary key (as defined in primaryKeyPos)
+    in the first csv matches the secondary key (as defined in secondaryKeyPos) in the secondary csv.
+    If there is a match then the columns (as defined in grabPos) are concatenated to the first csv
     which is written to the outputFile
 
     myDict = {'primaryKeyPos': #, 'secondaryKeyPos': #, 'grabPos': (#,)}
@@ -74,31 +76,30 @@ def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
     ~$ python -m doctest -v csv_grab.pu
     '''
     # read in csv
-    pf = pd.read_csv(primaryFile)
-    sf = pd.read_csv(secondaryFile)
+    primaryFrame = pd.read_csv(primaryFile)
+    secondaryFrame = pd.read_csv(secondaryFile)
 
-    errorCheck(pf,sf,myDict)
+    errorCheck(primaryFrame,secondaryFrame,myDict)
 
     # check if primary match secondary
-    pKeys = [*pf[pf.columns[myDict['primaryKeyPos']]]]
-    sKeys = [*sf[sf.columns[myDict['secondaryKeyPos']]]]
-    for pKey, sKey in zip(pKeys, sKeys):
-        if pKey == sKey:
-            # grab and append
-            getCol = lambda i: sf[sf.columns[i]]
-            colList = list(map(getCol, myDict['grabPos']))
-            for col in colList:
-                pf[col.name] = col
+    primaryKeyPos, secondaryKeyPos, grabPos = myDict.values()
+    for primaryKey, secondaryKey in zip(primaryFrame[primaryFrame.columns[primaryKeyPos]], secondaryFrame[secondaryFrame.columns[secondaryKeyPos]]):
+        if primaryKey == secondaryKey:
+            # get list of columns to add
+            cols_to_add = list(map(lambda i: secondaryFrame[secondaryFrame.columns[i]], grabPos))
+            for col in cols_to_add:
+                # append columns
+                primaryFrame[col.name] = col
             # stop on first match
             break
 
     # write csv
     with open(outputFile, 'w') as f:
         # header
-        f.write(','.join(pf.columns)+'\n')
+        f.write(','.join(primaryFrame.columns)+'\n')
         # rows
-        for i in range(len(pf.index)):
-            f.write(','.join([str(j) for j in pf.loc[i]])+'\n')
+        for i in range(len(primaryFrame.index)):
+            f.write(','.join([str(j) for j in primaryFrame.loc[i]])+'\n')
 
 
 if __name__=='__main__':
