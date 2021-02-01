@@ -2,10 +2,10 @@ import pandas as pd
 import doctest
 import sys
 
-def errorCheck(primaryFrame, secondaryFrame, myDict):
+def errorCheck(primaryFrame: str, secondaryFrame: str, myDict: dict[str:int, str:int, str:tuple[int]]):
     '''
     errorCheck validates the values provided by myDict are valid.
-    In other words 0 <= myDick.values() <= column count
+    In other words 0 <= myDict.values() <= column count
 
     >>> myDict={'secondaryKeyPos': 1, 'primaryKeyPos': 0, 'grabPos': (2,)}; a = pd.DataFrame(data={'x': ['a', 'b', 'c'], 'y': ['a','b','c'], 'z': [1,2,3]});errorCheck(a,a,myDict)
     Traceback (most recent call last):
@@ -59,7 +59,7 @@ def errorCheck(primaryFrame, secondaryFrame, myDict):
             or True in [grabPos[i] < 0 for i in range(len(grabPos))]:
         raise Exception('ERROR dictionary element out of range')
 
-def csv_grab(primaryFile, secondaryFile, outputFile, myDict):
+def csv_grab(primaryFile: str, secondaryFile: str, outputFile: str, myDict: dict[str:int, str:int, str:tuple[int]]) -> None:
     '''
     csv_grab reads in 2 csvs then checks row by row if the primary key (as defined in primaryKeyPos)
     in the first csv matches the secondary key (as defined in secondaryKeyPos) in the secondary csv.
